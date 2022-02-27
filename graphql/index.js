@@ -33,7 +33,6 @@ const typeDefs = gql`
     name: String!
     phone: String
     address: Address!
-    city: String!
     id: ID!
   }
 
