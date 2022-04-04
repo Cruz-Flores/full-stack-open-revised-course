@@ -1,56 +1,16 @@
-// import React from 'react';
-// import { gql, useQuery } from '@apollo/client';
-
-// const ALL_PERSONS = gql`
-//   query {
-//     allPersons {
-//       name
-//       phone
-//       id
-//     }
-//   }
-// `;
-
-// const Persons = ({ persons }) => {
-//   return (
-//     <div>
-//       <h2>Persons</h2>
-//       {persons.map((p) => (
-//         <div key={p.name}>
-//           {p.name} {p.phone}
-//         </div>
-//       ))}
-//     </div>
-//   );
-// };
-
-// const App = () => {
-//   const result = useQuery(ALL_PERSONS);
-
-//   if (result.loading) {
-//     return <div>loading...</div>;
-//   }
-
-//   return <Persons persons={result.data.allPersons} />;
-// };
-
-// export default App;
-
 import Persons from './components/Persons';
 import PersonForm from './components/PersonForm';
-import { useQuery } from '@apollo/client';
+import { useApolloClient, useQuery } from '@apollo/client';
 import { ALL_PERSONS } from './queries';
 import { useState } from 'react';
 import PhoneForm from './components/PhoneForm';
+import LoginForm from './components/LoginForm';
 
 const App = () => {
+  const [token, setToken] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
-
-  // realiza la consulta repetidamente, ver otra solucion en usemutatio en
-  //PersonForm
-  // const result = useQuery(ALL_PERSONS, {
-  //   pollInterval: 2000,
-  // });
+  const result = useQuery(ALL_PERSONS);
+  const client = useApolloClient();
 
   const notify = (message) => {
     setErrorMessage(message);
@@ -59,7 +19,21 @@ const App = () => {
     }, 2000);
   };
 
-  const result = useQuery(ALL_PERSONS);
+  const logout = () => {
+    setToken(null);
+    localStorage.clear();
+    client.resetStore();
+  };
+
+  if (!token) {
+    return (
+      <div>
+        <Notify errorMessage={errorMessage} />
+        <h2>Login</h2>
+        <LoginForm setToken={setToken} setError={notify} />
+      </div>
+    );
+  }
 
   if (result.loading) {
     return <div>loading...</div>;
@@ -68,6 +42,7 @@ const App = () => {
   return (
     <>
       <Notify errorMessage={errorMessage} />
+      <button onClick={logout}>logout</button>
       <Persons persons={result.data.allPersons} />
       <PersonForm setError={notify} />
       <PhoneForm setError={notify} />
