@@ -85,7 +85,7 @@ const resolvers = {
 
       return Person.find({ phone: { $exists: args.phone === 'YES' } });
     },
-    findPerson: (root, args) => Person.findOne({ name: args.name }),
+    findPerson: async (root, args) => await Person.findOne({ name: args.name }),
     me: (root, args, context) => {
       return context.currentUser;
     },
@@ -97,7 +97,7 @@ const resolvers = {
     }),
   },
   Mutation: {
-    addPerson: async (root, args) => {
+    addPerson: async (root, args, context) => {
       const person = new Person({ ...args });
       const currentUser = context.currentUser;
 
@@ -107,7 +107,7 @@ const resolvers = {
 
       try {
         await person.save();
-        currentUser.friends = currentUser.frinds.concat(person);
+        currentUser.friends = currentUser.friends.concat(person);
         await currentUser.save();
       } catch (error) {
         throw new UserInputError(error.message, {
