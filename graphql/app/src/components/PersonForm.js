@@ -1,5 +1,6 @@
 import { useMutation } from '@apollo/client';
 import { useState } from 'react';
+import { updateCache } from '../App';
 import { CREATE_PERSON, ALL_PERSONS } from '../queries';
 
 const PersonForm = ({ setError }) => {
@@ -12,15 +13,8 @@ const PersonForm = ({ setError }) => {
     onError: (error) => {
       setError(error.graphQLErrors[0].message);
     },
-    update: (store, response) => {
-      const dataInStore = store.readQuery({ query: ALL_PERSONS });
-      store.writeQuery({
-        query: ALL_PERSONS,
-        data: {
-          ...dataInStore,
-          allPersons: [...dataInStore.allPersons, response.data.addPerson],
-        },
-      });
+    update: (cache, response) => {
+      updateCache(cache, { query: ALL_PERSONS }, response.data.addPerson);
     },
   });
 
