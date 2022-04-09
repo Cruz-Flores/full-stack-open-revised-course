@@ -1,10 +1,17 @@
 import ReactDOM from 'react-dom';
-import { createStore } from 'redux';
-import { Provider } from 'react-redux';
 import App from './App';
+import { createStore, combineReducers } from 'redux';
+import { Provider } from 'react-redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
 import noteReducer from './reducers/noteReducer';
+import filterReducer from './reducers/filterReducer';
 
-const store = createStore(noteReducer);
+const reducer = combineReducers({
+  notes: noteReducer,
+  filter: filterReducer,
+});
+
+const store = createStore(reducer, composeWithDevTools());
 
 ReactDOM.render(
   <Provider store={store}>
