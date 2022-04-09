@@ -1,6 +1,7 @@
 import ReactDOM from 'react-dom';
 import App from './App';
-import { createStore, combineReducers } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import noteReducer from './reducers/noteReducer';
@@ -11,7 +12,9 @@ const reducer = combineReducers({
   filter: filterReducer,
 });
 
-const store = createStore(reducer, composeWithDevTools());
+const store = createStore(reducer, composeWithDevTools(applyMiddleware(thunk)));
+console.log('store.getState()', store.getState());
+store.subscribe(() => console.log(store.getState()));
 
 ReactDOM.render(
   <Provider store={store}>
